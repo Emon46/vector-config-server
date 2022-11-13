@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vector-config-server
+  namespace: vector
+spec:
+  serviceAccountName: vector-data-plane
+  containers:
+    - name: load-test
+      image: hremon331046/vector-config-server:latest
+      imagePullPolicy: IfNotPresent
+  restartPolicy: Never
