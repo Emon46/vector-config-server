@@ -46,7 +46,7 @@ type updateVectorConfigRequest struct {
 	Sources            map[string]interface{} `json:"sources"`
 }
 
-func (server *Server) AddNewTransformInConfig(ctx *gin.Context) {
+func (server *Server) AddNewConfigInConfigMap(ctx *gin.Context) {
 	var req updateVectorConfigRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -60,7 +60,7 @@ func (server *Server) AddNewTransformInConfig(ctx *gin.Context) {
 		return
 	}
 
-	vectorConfigDataYaml, vectorConfig, err := UpdateVectorConfigWithRequestedConfig(configMap.Data[vectorConfigFileName], req)
+	vectorConfigDataYaml, vectorConfig, err := getUpdatedConfigWithRequestedConfig(configMap.Data[vectorConfigFileName], req)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return

@@ -6,4 +6,4 @@ COPY ./app.env /app.env
 
 EXPOSE 8080
 
-ENTRYPOINT ["/bin/vector-config-server"]
+ENTRYPOINT ["/bin/control-agent"]

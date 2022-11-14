@@ -26,7 +26,7 @@ func NewServer(config Config, kubeClient kubernetes.Interface) (*Server, error) 
 func (server *Server) setUpRouterWithSubUrl() {
 	router := gin.Default()
 	router.GET("/config", server.GetVectorConfig)
-	router.POST("/config", server.AddNewTransformInConfig)
+	router.POST("/config", server.AddNewConfigInConfigMap)
 
 	server.router = router
 }

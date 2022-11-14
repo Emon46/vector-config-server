@@ -2,7 +2,7 @@
 REGISTRY ?= hremon331046
 # Image URL to use all building/pushing image targets
 TAG      ?=  latest
-IMG ?= $(REGISTRY)/vector-config-server:$(TAG)
+IMG ?= $(REGISTRY)/control-agent:$(TAG)
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.25.0
 
@@ -57,7 +57,7 @@ test: fmt vet ## Run tests.
 
 .PHONY: build
 build: fmt vet ## Build manager binary.
-	CGO_ENABLED=0 GOOS=linux go build -o bin/vector-config-server main.go
+	CGO_ENABLED=0 GOOS=linux go build -o bin/control-agent main.go
 
 .PHONY: run
 run: fmt vet ## Run a controller from your host.
@@ -84,3 +84,13 @@ push-to-kind: build docker-build
 .PHONY: clean
 clean:
 	rm -rf .go bin
+
+.PHONY: deploy
+deploy:
+	kubectl apply -f sample/namespace.yaml
+	kubectl apply -f sample/rbac.yaml
+	kubectl apply -f sample/pod.yaml
+
+.PHONY: undeploy
+undeploy:
+	kubectl delete -f sample/
