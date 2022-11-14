@@ -24,12 +24,14 @@ func (server *Server) GetVectorConfig(ctx *gin.Context) {
 	configMap, err := server.kubeClient.CoreV1().ConfigMaps(req.ConfigMapNameSpace).Get(context.TODO(), req.ConfigMapName, meta_v1.GetOptions{})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
 	}
 
 	vectorConfig := VectorConfig{}
 	err = yaml.Unmarshal([]byte(configMap.Data[vectorConfigFileName]), &vectorConfig)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
 	}
 
 	ctx.JSON(http.StatusOK, vectorConfig)
@@ -61,6 +63,7 @@ func (server *Server) AddNewTransformInConfig(ctx *gin.Context) {
 	vectorConfigDataYaml, vectorConfig, err := UpdateVectorConfigWithRequestedConfig(configMap.Data[vectorConfigFileName], req)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
 	}
 
 	// now patch the configmap with new updated vector config
@@ -70,6 +73,7 @@ func (server *Server) AddNewTransformInConfig(ctx *gin.Context) {
 	}, meta_v1.PatchOptions{})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
 	}
 
 	ctx.JSON(http.StatusOK, vectorConfig)
