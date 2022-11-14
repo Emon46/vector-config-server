@@ -3,33 +3,19 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"k8s.io/client-go/kubernetes"
-	restclient "k8s.io/client-go/rest"
-	"k8s.io/klog/v2"
-	"kmodules.xyz/client-go/tools/clientcmd"
 )
 
 type Server struct {
 	config     Config
-	kubeConfig *restclient.Config
-	kubeClient *kubernetes.Clientset
+	kubeClient kubernetes.Interface
 	router     *gin.Engine
 }
 
 // NewServer it will create a new gin api and setup routing for all the api call
-func NewServer(config Config) (*Server, error) {
-	kubeConfig, err := restclient.InClusterConfig()
-	if err != nil {
-		klog.Fatalln(err)
-	}
-	clientcmd.Fix(kubeConfig)
-	kubeClient, err := kubernetes.NewForConfig(kubeConfig)
-	if err != nil {
-		klog.Fatalln(err)
-	}
+func NewServer(config Config, kubeClient kubernetes.Interface) (*Server, error) {
 
 	server := &Server{
 		config:     config,
-		kubeConfig: kubeConfig,
 		kubeClient: kubeClient,
 	}
 

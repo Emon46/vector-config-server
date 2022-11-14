@@ -11,11 +11,10 @@ type VectorConfig struct {
 	Sources    map[string]interface{} `yaml:"sources"`
 }
 
-func UpdateVectorConfigWithRequestedConfig(currentConfig string, req updateVectorConfigRequest) (vectorDataYaml []byte, err error) {
-	vectorConfig := VectorConfig{}
+func UpdateVectorConfigWithRequestedConfig(currentConfig string, req updateVectorConfigRequest) (vectorDataYaml []byte, vectorConfig VectorConfig, err error) {
 	err = yaml.Unmarshal([]byte(currentConfig), &vectorConfig)
 	if err != nil {
-		return nil, err
+		return nil, vectorConfig, err
 	}
 
 	// add new source configs
@@ -33,8 +32,8 @@ func UpdateVectorConfigWithRequestedConfig(currentConfig string, req updateVecto
 
 	vectorDataYaml, err = yaml.Marshal(&vectorConfig)
 	if err != nil {
-		return nil, err
+		return nil, vectorConfig, err
 	}
 
-	return vectorDataYaml, nil
+	return vectorDataYaml, vectorConfig, nil
 }

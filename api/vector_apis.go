@@ -18,21 +18,21 @@ type getVectorConfigRequest struct {
 func (server *Server) GetVectorConfig(ctx *gin.Context) {
 	var req getVectorConfigRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.YAML(http.StatusBadRequest, errorResponse(err))
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 	configMap, err := server.kubeClient.CoreV1().ConfigMaps(req.ConfigMapNameSpace).Get(context.TODO(), req.ConfigMapName, meta_v1.GetOptions{})
 	if err != nil {
-		ctx.YAML(http.StatusInternalServerError, errorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 	}
 
 	vectorConfig := VectorConfig{}
 	err = yaml.Unmarshal([]byte(configMap.Data[vectorConfigFileName]), &vectorConfig)
 	if err != nil {
-		ctx.YAML(http.StatusInternalServerError, errorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 	}
 
-	ctx.YAML(http.StatusOK, vectorConfig)
+	ctx.JSON(http.StatusOK, vectorConfig)
 
 }
 
@@ -47,30 +47,30 @@ type updateVectorConfigRequest struct {
 func (server *Server) AddNewTransformInConfig(ctx *gin.Context) {
 	var req updateVectorConfigRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.YAML(http.StatusBadRequest, errorResponse(err))
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
 	// get the current vector config by getting the config map
 	configMap, err := server.kubeClient.CoreV1().ConfigMaps(req.ConfigMapNameSpace).Get(context.TODO(), req.ConfigMapName, meta_v1.GetOptions{})
 	if err != nil {
-		ctx.YAML(http.StatusInternalServerError, errorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
-	vectorConfigData, err := UpdateVectorConfigWithRequestedConfig(configMap.Data[vectorConfigFileName], req)
+	vectorConfigDataYaml, vectorConfig, err := UpdateVectorConfigWithRequestedConfig(configMap.Data[vectorConfigFileName], req)
 	if err != nil {
-		ctx.YAML(http.StatusInternalServerError, errorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 	}
 
 	// now patch the configmap with new updated vector config
 	_, _, err = core_util.PatchConfigMap(context.TODO(), server.kubeClient, configMap, func(in *core_v1.ConfigMap) *core_v1.ConfigMap {
-		in.Data[vectorConfigFileName] = string(vectorConfigData)
+		in.Data[vectorConfigFileName] = string(vectorConfigDataYaml)
 		return in
 	}, meta_v1.PatchOptions{})
 	if err != nil {
-		ctx.YAML(http.StatusInternalServerError, errorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 	}
 
-	ctx.YAML(http.StatusOK, string(vectorConfigData))
+	ctx.JSON(http.StatusOK, vectorConfig)
 }
