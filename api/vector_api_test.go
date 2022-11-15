@@ -86,34 +86,34 @@ func TestServerGetVectorConfig(t *testing.T) {
 				require.Equal(t, http.StatusInternalServerError, recorder.Code)
 			},
 		},
-		//{
-		//	name: "invalid config name",
-		//	body: gin.H{
-		//		"configMapName":      RandomString(8),
-		//		"configMapNameSpace": configMapNamespace,
-		//	},
-		//	checkResponse: func(recorder *httptest.ResponseRecorder) {
-		//		require.Equal(t, http.StatusInternalServerError, recorder.Code)
-		//	},
-		//},
-		//{
-		//	name: "missing namespace",
-		//	body: gin.H{
-		//		"configMapName": configMapName,
-		//	},
-		//	checkResponse: func(recorder *httptest.ResponseRecorder) {
-		//		require.Equal(t, http.StatusBadRequest, recorder.Code)
-		//	},
-		//},
-		//{
-		//	name: "missing config name",
-		//	body: gin.H{
-		//		"configMapNameSpace": configMapNamespace,
-		//	},
-		//	checkResponse: func(recorder *httptest.ResponseRecorder) {
-		//		require.Equal(t, http.StatusBadRequest, recorder.Code)
-		//	},
-		//},
+		{
+			name: "invalid config name",
+			body: gin.H{
+				"configMapName":      RandomString(8),
+				"configMapNameSpace": configMapNamespace,
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusInternalServerError, recorder.Code)
+			},
+		},
+		{
+			name: "missing namespace",
+			body: gin.H{
+				"configMapName": configMapName,
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+			},
+		},
+		{
+			name: "missing config name",
+			body: gin.H{
+				"configMapNameSpace": configMapNamespace,
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+			},
+		},
 	}
 
 	for i := range testCases {
