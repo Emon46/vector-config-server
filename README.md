@@ -74,3 +74,13 @@ export REGISTRY=<docker-hub-Registry-name>
 make push-to-kind
 ```
 this command will build and load the docker image in your local kind cluster.
+
+## Deploy helm-chart for control-agent
+
+``` 
+helm upgrade -i obsv-control-agent ./helm-chart/control-agent --devel --create-namespace --namespace obsv-control-agent
+```
+Above helm chart will create following resources
+- `statefulset`: which will run Observo control agent container which control the update of configMap.
+- `Service`: will create service to communicate with `observo control-agent` service. We have exposed `8080` port.
+- `ClusterRole`, `ClusterRoleBinding`, `ServiceAccount`: will set the Authorization rules for observo control-agent  `statefulset`'s pods to patch or update configMaps in k8s cluster.
