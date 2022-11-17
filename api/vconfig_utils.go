@@ -11,7 +11,7 @@ type VectorConfig struct {
 	Sources    map[string]interface{} `yaml:"sources"`
 }
 
-func UpdateVectorConfigWithRequestedConfig(currentConfig string, req updateVectorConfigRequest) (vectorDataYaml []byte, vectorConfig VectorConfig, err error) {
+func getUpdatedConfigWithRequestedConfig(currentConfig string, req updateVectorConfigRequest) (vectorDataYaml []byte, vectorConfig VectorConfig, err error) {
 	err = yaml.Unmarshal([]byte(currentConfig), &vectorConfig)
 	if err != nil {
 		return nil, vectorConfig, err
